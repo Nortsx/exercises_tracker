@@ -30,15 +30,36 @@ class MainScreen extends StatelessWidget {
           // center the children vertically; the main axis here is the vertical
           // axis because Columns are vertical (the cross axis would be
           // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+            Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                const Text(
+                  'User1',
+                ),
+                Text(
+                  'Quantity Estimated',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ]
             ),
-            Text(
-              'Main',
-              style: Theme.of(context).textTheme.headline4,
+            Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                const Text(
+                  'SitUps',
+                ),
+              ],
             ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                const Text(
+                  'Timer',
+                ),
+              ],
+            )
           ],
         ),
       ), // This trailing comma makes auto-formatting nicer for build methods.
