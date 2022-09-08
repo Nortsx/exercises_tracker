@@ -1,76 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 import 'package:percent_indicator/percent_indicator.dart';
-
-class _InputScreen extends StatefulWidget {
-  @override
-  State createState() => new _InputScreenState();
-}
-
-class _InputScreenState extends State<_InputScreen> {
-  final _textController = TextEditingController();
-
-  @override
-  Widget build(BuildContext context) {
-    String userPost = '';
-    return Column(children: [
-      TextField(
-          controller: _textController,
-          textAlign: TextAlign.center,
-          decoration: InputDecoration(
-            hintText: "Enter",
-            border: InputBorder.none,
-            suffixIcon: IconButton(
-              onPressed: () {
-                _textController.clear();
-              },
-              icon: const Icon(Icons.clear),
-            ),
-          ),
-          onSubmitted: (String text) {
-            setState(() {
-              userPost = text;
-            });
-            _textController.clear();
-          },
-          onChanged: (String text) {
-            setState(() {});
-          }),
-    ]);
-  }
-}
-
-class _DropDownScreen extends StatefulWidget {
-  @override
-  State createState() => new _DropDownScreenState();
-}
-
-class _DropDownScreenState extends State<_DropDownScreen> {
-  List<String> options = <String>[
-    'Sit-ups',
-    'Push-ups',
-  ];
-  String dropDownValue = 'Sit-ups';
-  @override
-  Widget build(BuildContext context) {
-    return DropdownButton(
-      value: dropDownValue,
-      items: options.map<DropdownMenuItem<String>>(
-        (String value) {
-          return DropdownMenuItem<String>(
-            value: value,
-            child: Text(value),
-          );
-        },
-      ).toList(),
-      onChanged: (String? newValue) {
-        setState(() {
-          dropDownValue = newValue!;
-        });
-      },
-    );
-  }
-}
+import 'package:exercises_tracker/components/dropdownScreen_builder.dart';
+import 'package:exercises_tracker/components/inputScreen_builder.dart';
 
 class MainScreen extends StatelessWidget {
   const MainScreen({super.key});
@@ -97,11 +29,8 @@ class MainScreen extends StatelessWidget {
           ),
         ),
         Center(
-            child: Align(
-          alignment: Alignment(0, -1.5),
-          child: Flexible(
-              fit: FlexFit.loose,
-              flex: 2,
+          child: Align(
+              alignment: Alignment(0, -1.5),
               child: Container(
                 height: 55.h,
                 alignment: Alignment.topCenter,
@@ -112,8 +41,8 @@ class MainScreen extends StatelessWidget {
                         image: AssetImage("assets/MainUpperBackground.png"),
                         fit: BoxFit.fitWidth)),
               )),
-        )),
-        Center(child: _biildNavBar()),
+        ),
+        Center(child: _buildNavBar()),
         Center(child: _buildTimer()),
         SafeArea(child: _buildTrainingField()),
         SafeArea(
@@ -172,7 +101,7 @@ class MainScreen extends StatelessWidget {
                     child: SizedBox(
                       height: 100,
                       width: 100,
-                      child: _DropDownScreen(),
+                      child: DropDownScreen(),
                     ),
                   ),
                   Align(
@@ -180,7 +109,7 @@ class MainScreen extends StatelessWidget {
                     child: SizedBox(
                       height: 250,
                       width: 150,
-                      child: _InputScreen(),
+                      child: InputScreen(),
                     ),
                   ),
                 ],
@@ -228,8 +157,7 @@ class MainScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                       image: DecorationImage(
                           alignment: Alignment(-0.2, -0.89),
-                          image:
-                              AssetImage("assets/free-icon-user-1946429.png"))),
+                          image: AssetImage("assets/UserAvatarIcon.png"))),
                 ),
               ),
             ],
@@ -271,7 +199,7 @@ class MainScreen extends StatelessWidget {
     );
   }
 
-  Widget _biildNavBar() {
+  Widget _buildNavBar() {
     return Align(
         alignment: Alignment(0, 0.9),
         child: Container(
@@ -288,8 +216,7 @@ class MainScreen extends StatelessWidget {
                 height: 34,
                 decoration: BoxDecoration(
                     image: DecorationImage(
-                  image:
-                      AssetImage("assets/48487c025a82eba63dea69ce02a02e0e.png"),
+                  image: AssetImage("assets/MainMenuIcon.png"),
                   alignment: Alignment.centerLeft,
                 )),
               ),
@@ -298,7 +225,7 @@ class MainScreen extends StatelessWidget {
                 width: 34,
                 decoration: BoxDecoration(
                     image: DecorationImage(
-                        image: AssetImage("assets/vector60-11427-01.png"),
+                        image: AssetImage("assets/RecordsIcon.png"),
                         alignment: Alignment.center)),
               ),
               Container(
@@ -306,8 +233,7 @@ class MainScreen extends StatelessWidget {
                 width: 34,
                 decoration: BoxDecoration(
                     image: DecorationImage(
-                        image: AssetImage(
-                            "assets/free-icon-leaderboard-4489655.png"),
+                        image: AssetImage("assets/LeaderboardIcon.png"),
                         alignment: Alignment.centerRight)),
               ),
             ],
