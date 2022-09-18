@@ -9,6 +9,9 @@ class DropDownScreenState extends State<DropDownScreen> {
   List<String> options = <String>[
     'Sit-ups',
     'Push-ups',
+    'Abs',
+    'Lunges',
+    
   ];
   String dropDownValue = 'Sit-ups';
   @override
