@@ -66,7 +66,7 @@ class MainScreen extends StatelessWidget {
             Align(
               alignment: Alignment(0.0, -0.6),
               child: Text(
-                "Qunatity estimated",
+                "Quantity estimated",
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
             ),
@@ -176,14 +176,14 @@ class MainScreen extends StatelessWidget {
         height: 36.h,
         child: Column(
           children: [
-            Align(
+            const Align(
               alignment: Alignment.topCenter,
               child: Text(
                 "Time estimated",
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 55,
             ),
             Align(

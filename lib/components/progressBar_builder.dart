@@ -12,12 +12,14 @@ class ProgressBarState extends State<ProgressBar> {
   @override
   Widget build(BuildContext context) {
     TrainingsViewModel trainingsViewModel = context.watch<TrainingsViewModel>();
-    int currentAmount = trainingsViewModel.getCurrentAmount();
-    int goal = trainingsViewModel.getGoalAmount();
+    //int currentAmount = trainingsViewModel.getCurrentAmount();
+    //int goal = trainingsViewModel.getGoalAmount(); //TODO I am not sure we can get model values without forwarding it through the main
+    int currentAmount = 0;
+    int goal = 0;
     return CircularPercentIndicator(
       radius: 45,
       percent:
-          trainingsViewModel.trainingModel.currentAmountForProgressBar / 100,
+      currentAmount / 100,
       progressColor: Color.fromARGB(181, 126, 242, 100),
       center: new Text(
         "$currentAmount/$goal",
