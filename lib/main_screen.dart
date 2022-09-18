@@ -1,3 +1,7 @@
+import 'package:exercises_tracker/components/progressBar_builder.dart';
+import 'package:exercises_tracker/models/training_model.dart';
+import 'package:exercises_tracker/settings_screen.dart';
+import 'package:exercises_tracker/viewmodels/trainings_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 import 'package:percent_indicator/percent_indicator.dart';
@@ -5,8 +9,7 @@ import 'package:exercises_tracker/components/dropdownScreen_builder.dart';
 import 'package:exercises_tracker/components/inputScreen_builder.dart';
 
 class MainScreen extends StatelessWidget {
-  const MainScreen({super.key});
-
+  MainScreen({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,7 +49,7 @@ class MainScreen extends StatelessWidget {
         Center(child: _buildTimer()),
         SafeArea(child: _buildTrainingField()),
         SafeArea(
-          child: Center(child: _buildUserField()),
+          child: Center(child: _buildUserField(context)),
         ),
       ]),
     );
@@ -70,17 +73,7 @@ class MainScreen extends StatelessWidget {
             SizedBox(
               height: 30,
             ),
-            Align(
-              child: CircularPercentIndicator(
-                radius: 45,
-                percent: 50 / 100,
-                progressColor: Color.fromARGB(181, 126, 242, 100),
-                center: new Text(
-                  "50/100",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
+            Align(child: ProgressBar()),
             SizedBox(
               height: 30,
             ),
@@ -96,6 +89,9 @@ class MainScreen extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  SizedBox(
+                    width: 2,
+                  ),
                   Align(
                     alignment: Alignment(0, -0.1),
                     child: SizedBox(
@@ -108,7 +104,7 @@ class MainScreen extends StatelessWidget {
                     alignment: Alignment(1, 1),
                     child: SizedBox(
                       height: 250,
-                      width: 150,
+                      width: 120,
                       child: InputScreen(),
                     ),
                   ),
@@ -122,7 +118,7 @@ class MainScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildUserField() {
+  Widget _buildUserField(BuildContext context) {
     return Align(
         alignment: Alignment.topCenter,
         child: Container(
@@ -151,15 +147,22 @@ class MainScreen extends StatelessWidget {
                 ),
               ),
               Align(
-                alignment: Alignment(0.88, -0.9),
-                child: Container(
-                  width: 45,
-                  decoration: BoxDecoration(
-                      image: DecorationImage(
-                          alignment: Alignment(-0.2, -0.89),
-                          image: AssetImage("assets/UserAvatarIcon.png"))),
-                ),
-              ),
+                  alignment: Alignment(0.88, -0.9),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => SettingsScreen()));
+                    },
+                    child: Container(
+                      width: 45,
+                      decoration: BoxDecoration(
+                          image: DecorationImage(
+                              alignment: Alignment(-0.2, -0.89),
+                              image: AssetImage("assets/UserAvatarIcon.png"))),
+                    ),
+                  )),
             ],
           ),
         ));

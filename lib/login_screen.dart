@@ -1,6 +1,8 @@
 import 'package:exercises_tracker/main_screen.dart';
+import 'package:exercises_tracker/viewmodels/trainings_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
 class SetupScreen extends StatelessWidget {
@@ -24,7 +26,10 @@ class SetupScreen extends StatelessWidget {
           // is not restarted.
           primarySwatch: Colors.blue,
         ),
-        home: const MainScreen(),
+        home: ChangeNotifierProvider(
+          create: (context) => TrainingsViewModel(),
+          child: MainScreen(),
+        ),
       );
     });
   }
