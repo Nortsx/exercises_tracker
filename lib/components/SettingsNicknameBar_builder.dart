@@ -12,7 +12,7 @@ class SettingsNicknameBarState extends State<SettingsNicknameBar> {
   @override
   Widget build(BuildContext context) {
     UserViewModel userViewModel = context.watch<UserViewModel>();
-    String nickname = userViewModel.userModel.nickname;
+    String nickname = userViewModel.getUsername();
     print(userViewModel.userModel.nickname + " SettingsNicknameBarState");
     return Container(
       alignment: Alignment.center,

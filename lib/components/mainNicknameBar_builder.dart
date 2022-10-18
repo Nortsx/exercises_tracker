@@ -19,7 +19,7 @@ class MainNicknameBarState extends State<MainNicknameBar> {
   @override
   Widget build(BuildContext context) {
     UserViewModel userViewModel = context.watch<UserViewModel>();
-    nickname = userViewModel.userModel.nickname;
+    nickname = userViewModel.getUsername();
     print(userViewModel.userModel.nickname + " MainNicknameBarState");
     return Align(
       alignment: Alignment.topRight,

@@ -1,6 +1,9 @@
 import 'dart:io';
+import 'package:exercises_tracker/db/Database_provider.dart';
 import 'package:exercises_tracker/models/training_model.dart';
 import 'package:flutter/material.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:sqflite/sqflite.dart';
 
 class UserModel {
   late String nickname;
@@ -34,7 +37,7 @@ class UserModel {
     return isSigned;
   }
 
-  void set isSignedUp(bool value) {
+  set isSignedUp(bool value) {
     isSigned = value;
   }
 
@@ -42,7 +45,7 @@ class UserModel {
     return isSoundPlayed;
   }
 
-  void set isSoundEnabled(bool value) {
+  set isSoundEnabled(bool value) {
     isSoundPlayed = value;
   }
 }

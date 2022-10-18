@@ -7,6 +7,8 @@ import 'package:exercises_tracker/viewmodels/user_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'GoalButtonChanger_builder.dart';
+
 class GoalChangerScreen extends StatefulWidget {
   @override
   State createState() => new GoalChangerScreenState();

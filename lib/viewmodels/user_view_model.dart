@@ -11,18 +11,20 @@ import '../models/User_model.dart';
 import 'dart:convert';
 
 class UserViewModel extends ChangeNotifier {
-  var userModel = UserModel();
+  late var userModel = UserModel();
 
   //magic number to figure out if goal was reached more than once per a day
   late int overWorked;
 
   late var trainingModel;
 
+  late var db;
+
   //Map to store goals for all the types of sport
   final Map<String, int> tempOverallGoals = {};
 
   UserViewModel() {
-    getUtilsInfo();
+    getInfoFromComponents();
     if (!userModel.isSignedUp) {
       _setRandomNickname();
       insertInfoIntoDB();
@@ -48,9 +50,7 @@ class UserViewModel extends ChangeNotifier {
 //increase amount of completed exercises, input's taken from input form in the main_screen
   void increaseAmountOfCompleted(String amount) {
     var dateTime = DateTime.now();
-    int accomplishedAmount = int.parse(amount);
-    trainingModel.increaseBy(accomplishedAmount);
-    insertNewAccomplished(accomplishedAmount, dateTime.toIso8601String());
+    updateProgress(int.parse(amount), dateTime.toIso8601String());
     print(amount); //debug-only
 
     if (userModel.isSoundPlayed) {
@@ -74,13 +74,18 @@ class UserViewModel extends ChangeNotifier {
     return trainingModel.goalInQuantity;
   }
 
+  String getUsername() {
+    return userModel.nickname;
+  }
+
   String getTypeOfSport() {
     return trainingModel.type;
   }
 
 //gather all the information required to properly run the app
-  void getUtilsInfo() async {
-    print("Creation of an object");
+  void getInfoFromComponents() async {
+    print("Gathering information");
+    db = await getDatabaseInstance()!;
     trainingModel = TrainingModel();
     userModel.isSignedUp = await queryForNickname()!;
     queryForSound();
@@ -93,15 +98,18 @@ class UserViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<Database> getDatabaseInstance() async {
+    return await DatabaseProvider.instance.database;
+  }
+
 //Query for goals each time viewmodel's created, which result's gonna be presented in the progress bar and settings.
   void queryForGoals() async {
-    Database db = await DatabaseProvider.instance.database;
     List<Map> result =
         await db.rawQuery("SELECT sport_type_id FROM Goals_info LIMIT 1");
     if (result!.isEmpty) {
       initializeGoalsTable();
     } else {
-      Database db = await DatabaseProvider.instance.database;
+      ;
       List<Map> resultQuantity = await db.rawQuery(
           "SELECT quantity_goal from Goals_info WHERE sport_type_id = (SELECT sport_type_id FROM Sport_types WHERE sport_type_name = ?)",
           [trainingModel.type]);
@@ -117,34 +125,33 @@ class UserViewModel extends ChangeNotifier {
 
 //Initialize required tables for the first time of using the app.
   void initializeGoalsTable() async {
-    Database db = await DatabaseProvider.instance.database;
+    String username = userModel.nickname;
     final batch = db.batch();
     batch.execute(
-        """INSERT INTO Goals_info (user_id, sport_type_id, quantity_goal) VALUES ((SELECT user_id FROM User_info LIMIT 1),
+        """INSERT INTO Goals_info (user_id, sport_type_id, quantity_goal) VALUES ((SELECT user_id FROM User_info WHERE nickname = ?),
          (SELECT sport_type_id FROM Sport_types WHERE sport_type_name = ?), ?)""",
-        ["Sit-ups", 100]);
+        [username, "Sit-ups", 100]);
     batch.execute(
-        """INSERT INTO Goals_info (user_id, sport_type_id, quantity_goal) VALUES ((SELECT user_id FROM User_info LIMIT 1),
+        """INSERT INTO Goals_info (user_id, sport_type_id, quantity_goal) VALUES ((SELECT user_id FROM User_info WHERE nickname = ?),
          (SELECT sport_type_id FROM Sport_types WHERE sport_type_name = ?), ?)""",
-        ["Push-ups", 100]);
+        [username, "Push-ups", 100]);
     batch.execute(
-        """INSERT INTO Goals_info (user_id, sport_type_id, quantity_goal) VALUES ((SELECT user_id FROM User_info LIMIT 1),
+        """INSERT INTO Goals_info (user_id, sport_type_id, quantity_goal) VALUES ((SELECT user_id FROM User_info WHERE nickname = ?),
          (SELECT sport_type_id FROM Sport_types WHERE sport_type_name = ?), ?)""",
-        ["Abs", 100]);
+        [username, "Abs", 100]);
     batch.execute(
-        """INSERT INTO Goals_info (user_id, sport_type_id, quantity_goal) VALUES ((SELECT user_id FROM User_info LIMIT 1),
+        """INSERT INTO Goals_info (user_id, sport_type_id, quantity_goal) VALUES ((SELECT user_id FROM User_info WHERE nickname = ?),
          (SELECT sport_type_id FROM Sport_types WHERE sport_type_name = ?), ?)""",
-        ["Lunges", 100]);
+        [username, "Lunges", 100]);
     batch.execute(
-        """INSERT INTO Goals_info (user_id, sport_type_id, time_goal) VALUES ((SELECT user_id FROM User_info LIMIT 1),
+        """INSERT INTO Goals_info (user_id, sport_type_id, time_goal) VALUES ((SELECT user_id FROM User_info WHERE nickname = ?),
          (SELECT sport_type_id FROM Sport_types WHERE sport_type_name = ?), ?)""",
-        ["Time estimated", 10]);
+        [username, "Time estimated", 10]);
     batch.commit(noResult: true);
   }
 
 //Get the first type of sport to be loaded at the startup of the application.
   void queryForSportTypes() async {
-    Database db = await DatabaseProvider.instance.database;
     List<Map> result =
         await db.rawQuery("SELECT sport_type_name FROM Sport_types LIMIT 1");
     if (result!.isEmpty) {
@@ -160,7 +167,6 @@ class UserViewModel extends ChangeNotifier {
 
 //Get boolean value represnted by either 0 or 1 to get to know wheter sound should be enabled or disabled.
   void queryForSound() async {
-    Database db = await DatabaseProvider.instance.database;
     List<Map> result =
         await db.rawQuery("SELECT isSoundEnabled FROM User_info LIMIT 1");
     if (result[0].values.first == 1) {
@@ -174,7 +180,6 @@ class UserViewModel extends ChangeNotifier {
 //If you're using the app for more than once, it'll query the nickname stored in DB.
   Future<bool> queryForNickname() async {
     bool isSigneUp = false;
-    Database db = await DatabaseProvider.instance.database;
     List<Map> result =
         await db.rawQuery("SELECT nickname from User_info LIMIT 1");
     await db.rawDelete("DELETE FROM User_info WHERE user_id != 1");
@@ -193,7 +198,6 @@ class UserViewModel extends ChangeNotifier {
     var nickname = userModel.getNickname();
     String now = new DateTime.now().toIso8601String();
     // var date = DateTime(now.year, now.month, now.day);
-    Database db = await DatabaseProvider.instance.database;
     db.rawInsert(
         'INSERT INTO User_info(nickname, last_login_date) VALUES(?, ?)',
         [nickname, now]);
@@ -203,14 +207,12 @@ class UserViewModel extends ChangeNotifier {
 //Each time you open the app, it updates last time of logging in to later update progress values.
   void updateLoginDateInTable() async {
     String now = new DateTime.now().toIso8601String();
-    Database db = await DatabaseProvider.instance.database;
     db.rawUpdate("UPDATE User_info SET last_login_date = ? WHERE nickname = ?",
         [now, userModel.nickname]);
   }
 
 //Sets new nickname, which value is taken from a special form in the settings_screen.
   void setNewNickname(String newNickname) async {
-    Database db = await DatabaseProvider.instance.database;
     db.rawUpdate("UPDATE User_info SET nickname = ? WHERE nickname = ?",
         [newNickname, userModel.nickname]);
     userModel.nickname = newNickname;
@@ -221,7 +223,6 @@ class UserViewModel extends ChangeNotifier {
 
 //Changes sound feature and sets it to either enabled or disabled.
   void changeButtonState(bool currentState) async {
-    Database db = await DatabaseProvider.instance.database;
     db.rawUpdate("UPDATE User_info SET isSoundEnabled = ? WHERE nickname = ?",
         [currentState == true ? 1 : 0, userModel.nickname]);
     userModel.isSoundPlayed = currentState;
@@ -230,12 +231,12 @@ class UserViewModel extends ChangeNotifier {
 
 //Sets updated amount of accomplished progress in the DB.
   void updateQuantityGoal(String type, int amount) async {
-    Database db = await DatabaseProvider.instance.database;
     db.rawUpdate(
         "UPDATE Goals_info SET quantity_goal = ? WHERE sport_type_id = (SELECT sport_type_id FROM Sport_types WHERE sport_type_name = ?)",
         [amount, type]);
     trainingModel.goalInQuantity = amount;
     trainingModel.type = type;
+    updateCurrentProgress();
     fetchGoalsFromTable();
     notifyListeners();
   }
@@ -252,7 +253,7 @@ class UserViewModel extends ChangeNotifier {
   void updateCurrentProgress() async {
     String currentDate = new DateTime.now().toIso8601String().substring(0, 10);
     print(currentDate);
-    Database db = await DatabaseProvider.instance.database;
+
     List<Map> result = await db
         .rawQuery("""SELECT SUM(current_quantity_progress) FROM Sports_info
     WHERE sport_type_id = (SELECT sport_type_id FROM Sport_types WHERE sport_type_name = ?) AND inserting_date LIKE ?
@@ -277,7 +278,6 @@ class UserViewModel extends ChangeNotifier {
 
 //Gets goal according to sport's type, which's gonna be presented in the progress bar.
   void updateGoal(String newType) async {
-    Database db = await DatabaseProvider.instance.database;
     List<Map> result = [];
     result = await db.rawQuery(
         "SELECT quantity_goal from Goals_info WHERE sport_type_id = (SELECT sport_type_id FROM Sport_types WHERE sport_type_name = ?)",
@@ -289,8 +289,6 @@ class UserViewModel extends ChangeNotifier {
 
 //Gets all the goals of different kinds of sport which're going to be stored in the Map structure to be available later at different screens.
   void fetchGoalsFromTable() async {
-    Database db = await DatabaseProvider.instance.database;
-
     List<Map> timeResult = await db.rawQuery(
       "SELECT time_goal FROM Goals_info WHERE quantity_goal IS NULL",
     );
@@ -320,8 +318,8 @@ class UserViewModel extends ChangeNotifier {
   }
 
 //Inserts amount of completed exercices with the time they've been completed at to the Sports_info table to later fetch them.
-  void insertNewAccomplished(int amount, String time) async {
-    Database db = await DatabaseProvider.instance.database;
+  void updateProgress(int amount, String time) async {
+    trainingModel.increaseBy(amount);
     if (trainingModel.type != "Time estimated") {
       db.rawInsert("""
 INSERT INTO Sports_info (user_id, current_quantity_progress, inserting_date, sport_type_id)
@@ -360,7 +358,6 @@ VALUES
 
 //Sets new chosen image from gallery as a new profile photo in DB which's later gonna be shown in screens.
   void updateProfilePhoto(File? img) async {
-    Database db = await DatabaseProvider.instance.database;
     List<int> bytes = await img!.readAsBytes();
     db.rawUpdate(
         "UPDATE User_info SET profile_photo = ? WHERE user_id = (SELECT user_id FROM User_info WHERE nickname = ?)",
@@ -371,7 +368,6 @@ VALUES
 
 //Queries image from DB and sets it as the profile photo of the current user.
   void setNewProfilePhoto() async {
-    Database db = await DatabaseProvider.instance.database;
     List<Map> result = await db.rawQuery(
         "SELECT profile_photo FROM User_info WHERE nickname = ?",
         [userModel.nickname]);
