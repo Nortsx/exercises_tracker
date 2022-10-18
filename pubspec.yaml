@@ -40,6 +40,9 @@ dependencies:
   sizer: ^2.0.15
   provider: ^6.0.0
   audioplayers: ^0.20.1
+  sqflite: ^2.0.0+3
+  image_picker: ^0.8.5+3
+  image_cropper: ^3.0.0
 
 dev_dependencies:
   flutter_test:

@@ -1,7 +1,8 @@
+import 'package:exercises_tracker/components/MainMenuProfilePhoto_builder.dart';
+import 'package:exercises_tracker/components/mainNicknameBar_builder.dart';
 import 'package:exercises_tracker/components/progressBar_builder.dart';
 import 'package:exercises_tracker/models/training_model.dart';
 import 'package:exercises_tracker/settings_screen.dart';
-import 'package:exercises_tracker/viewmodels/trainings_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 import 'package:percent_indicator/percent_indicator.dart';
@@ -135,34 +136,19 @@ class MainScreen extends StatelessWidget {
                             alignment: Alignment(0.5, -0.9),
                             image: AssetImage("assets/RectangleName.png")))),
               ),
-              Align(
-                alignment: Alignment.topRight,
-                child: Container(
-                  width: 200,
-                  alignment: Alignment(-0.05, -0.8),
-                  child: new Text(
-                    "User100",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
+              MainNicknameBar(),
               Align(
                   alignment: Alignment(0.88, -0.9),
                   child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
+                      onTap: () {
+                        Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => SettingsScreen()));
-                    },
-                    child: Container(
-                      width: 45,
-                      decoration: BoxDecoration(
-                          image: DecorationImage(
-                              alignment: Alignment(-0.2, -0.89),
-                              image: AssetImage("assets/UserAvatarIcon.png"))),
-                    ),
-                  )),
+                            builder: (context) => SettingsScreen(),
+                          ),
+                        );
+                      },
+                      child: MainMenuProfilePhoto())),
             ],
           ),
         ));
