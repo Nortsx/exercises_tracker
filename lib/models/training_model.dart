@@ -9,19 +9,19 @@ class TrainingModel {
   late int goalInQuantity;
 
   //type of sport activity
-  late String type;
+  String type = "Sit-ups";
+
+  late int goalInMinutes;
 
   TrainingModel() {
-    currentAmountForProgressBar = 0;
     currentAmount = 0;
     goalInQuantity = 100;
+    goalInMinutes = 10;
+    //type = "";
   }
 
 //get previously saved data from db to restore currentAmount and goal.
   void fetchFromDB() {}
-
-//upload each addition of completed excercises alongside their time of completion(year, day, hours, minutes)
-  void uploadToDB(int newAmount, DateTime dateTime) {}
 
 //return number of completed exercises
   int getCurrentAmount() {
@@ -34,19 +34,16 @@ class TrainingModel {
   }
 
 //increase amount of completed exercises by adding amount of ones you've just done
-  void increaseBy(int amount, DateTime dateTime) {
-    if (currentAmountForProgressBar + amount > 100) {
-      currentAmountForProgressBar = 100;
-    } else {
-      currentAmountForProgressBar += amount;
-    }
+  void increaseBy(int amount) {
     currentAmount += amount;
-    uploadToDB(
-        amount, dateTime); // upload typeOfSport, date and increased amount
   }
 
-//every 24h reset amount of completed exercises
-  void resetCurrentAmount() {
-    currentAmount = 0;
+  void setProgresses(int amount) {
+    currentAmount = amount;
+    if (amount < goalInQuantity) {
+      currentAmountForProgressBar = amount;
+    } else {
+      currentAmountForProgressBar = goalInQuantity;
+    }
   }
 }

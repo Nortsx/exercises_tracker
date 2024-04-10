@@ -1,7 +1,7 @@
 import 'package:exercises_tracker/components/dropdownScreen_builder.dart';
 import 'package:exercises_tracker/main_screen.dart';
+import 'package:exercises_tracker/viewmodels/user_view_model.dart';
 import 'package:flutter/material.dart';
-import 'package:exercises_tracker/viewmodels/trainings_view_model.dart';
 import 'package:provider/provider.dart';
 
 class InputScreen extends StatefulWidget {
@@ -10,11 +10,16 @@ class InputScreen extends StatefulWidget {
 }
 
 class InputScreenState extends State<InputScreen> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
   final _textController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    TrainingsViewModel trainingsViewModel = context.watch<TrainingsViewModel>();
+    UserViewModel userViewModel = context.watch<UserViewModel>();
     String userPost = '';
     return Column(children: [
       TextField(
@@ -36,7 +41,9 @@ class InputScreenState extends State<InputScreen> {
               if (text[0] == '-' || text == '0') {
                 showAlertDialog();
               } else {
-                trainingsViewModel.increaseAmountOfCompleted(userPost);
+                userViewModel.increaseAmountOfCompleted(userPost);
+                debugPrint(
+                    userViewModel.trainingModel.type + " INPUTSCREENBUILDER");
               }
             });
             _textController.clear();

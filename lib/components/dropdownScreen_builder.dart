@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../viewmodels/user_view_model.dart';
 
 class DropDownScreen extends StatefulWidget {
   @override
@@ -6,16 +8,22 @@ class DropDownScreen extends StatefulWidget {
 }
 
 class DropDownScreenState extends State<DropDownScreen> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
   List<String> options = <String>[
     'Sit-ups',
     'Push-ups',
     'Abs',
     'Lunges',
-    
   ];
-  String dropDownValue = 'Sit-ups';
+  late String dropDownValue;
   @override
   Widget build(BuildContext context) {
+    UserViewModel userViewModel = context.watch<UserViewModel>();
+    dropDownValue = userViewModel.getTypeOfSport();
     return DropdownButton(
       value: dropDownValue,
       items: options.map<DropdownMenuItem<String>>(
@@ -28,7 +36,9 @@ class DropDownScreenState extends State<DropDownScreen> {
       ).toList(),
       onChanged: (String? newValue) {
         setState(() {
-          dropDownValue = newValue!;
+          userViewModel.updateType(newValue!);
+          dropDownValue = newValue;
+          debugPrint(userViewModel.trainingModel.type + " DROPDOWNVALUE");
         });
       },
     );
